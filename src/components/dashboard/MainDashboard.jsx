@@ -1,60 +1,50 @@
-import KpiTwr from '../widgets/KpiTwr'
-import KpiYield from '../widgets/KpiYield'
-import KpiTopFlop from '../widgets/KpiTopFlop'
-import RiskTable from '../widgets/RiskTable'
+import HeroSummary from '../widgets/HeroSummary'
 import BenchmarkChart from '../widgets/BenchmarkChart'
-import NetWorthChart from '../widgets/NetWorthChart'
-import DrawdownChart from '../widgets/DrawdownChart'
 import HeatmapTreemap from '../widgets/HeatmapTreemap'
-import BreakdownLevel from '../widgets/BreakdownLevel'
-import LastTransactions from '../widgets/LastTransactions'
+import CompactKpi from '../widgets/CompactKpi'
+import RiskTable from '../widgets/RiskTable'
 import EventCalendar from '../widgets/EventCalendar'
+import LastTransactions from '../widgets/LastTransactions'
 
 export default function MainDashboard() {
   return (
-    <div className="flex flex-col gap-4 h-full pb-8">
+    <div className="flex flex-col gap-6 h-full pb-12">
       
-      {/* RIGA 1: KPI (4 colonne) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-32 shrink-0">
-        <KpiTwr />
-        <KpiYield />
-        <KpiTopFlop />
-        <RiskTable />
-      </div>
+      {/* RIGA 1: HERO SECTION MASSICCIA */}
+      <section className="w-full shrink-0">
+        <HeroSummary />
+      </section>
 
-      {/* RIGA 2: Grafici Principali (8 + 4) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[300px] shrink-0">
-        <div className="lg:col-span-8 h-full">
-          <BenchmarkChart />
+      {/* RIGA 2: GRID ASIMMETRICA (8 sx / 4 dx) */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* COLONNA SINISTRA (8) - Focus Visivo (Grafici) */}
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          {/* Main Immersive Chart */}
+          <div className="w-full">
+            <BenchmarkChart />
+          </div>
+          
+          {/* Heatmap espansa per dominare la parte bassa */}
+          <div className="w-full">
+            <HeatmapTreemap />
+          </div>
         </div>
-        <div className="lg:col-span-4 h-full">
-          <NetWorthChart />
-        </div>
-      </div>
 
-      {/* RIGA 3: Drawdown & Heatmap (6 + 6) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[250px] shrink-0">
-        <div className="lg:col-span-6 h-full">
-          <DrawdownChart />
-        </div>
-        <div className="lg:col-span-6 h-full">
-          <HeatmapTreemap />
-        </div>
-      </div>
-
-      {/* RIGA 4: Dati e Eventi (4 + 4 + 4) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-[300px]">
-        <div className="lg:col-span-4 h-full">
-          <BreakdownLevel />
-        </div>
-        <div className="lg:col-span-4 h-full">
+        {/* COLONNA DESTRA (4) - Feed Dati in Tempo Reale & Risk */}
+        <div className="lg:col-span-4 flex flex-col gap-6 sticky top-6">
+          <CompactKpi />
+          <RiskTable />
           <EventCalendar />
+          
+          {/* Sezione transazioni con scroll interno limitato */}
+          <div className="flex-1 min-h-[300px]">
+            <LastTransactions />
+          </div>
         </div>
-        <div className="lg:col-span-4 h-full">
-          <LastTransactions />
-        </div>
-      </div>
 
+      </section>
+      
     </div>
   )
 }

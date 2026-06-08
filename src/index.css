@@ -105,17 +105,20 @@
 
 @layer components {
   .card {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background-color: color-mix(in srgb, var(--color-surface) 60%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid color-mix(in srgb, var(--color-border) 40%, transparent);
     box-shadow: var(--shadow-card-theme);
-    border-radius: 0.75rem; /* rounded-xl */
-    padding: 1.25rem; /* p-5 */
-    transition: all 0.2s ease-in-out;
+    border-radius: 1rem; /* rounded-2xl */
+    padding: 1.5rem; /* p-6 */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .card:hover {
-    border-color: var(--color-borderAccent);
-    background-color: var(--color-surfaceHover);
+    border-color: color-mix(in srgb, var(--color-borderAccent) 60%, transparent);
+    background-color: color-mix(in srgb, var(--color-surfaceHover) 70%, transparent);
+    transform: translateY(-2px);
   }
   
   .text-profit {

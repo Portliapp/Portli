@@ -11,19 +11,17 @@ const data = [
 
 export default function BenchmarkChart() {
   return (
-    <div className="card h-full flex flex-col">
-      <div className="text-[10px] text-textSecondary uppercase tracking-widest font-mono mb-4">Benchmark Compilator</div>
-      <div className="flex-1 min-h-[200px] -ml-4">
+    <div className="card h-full flex flex-col border-0 ring-1 ring-white/5 bg-gradient-to-br from-surface/40 to-transparent">
+      <div className="text-[10px] text-textSecondary uppercase tracking-widest font-mono mb-6">Benchmark Compilator</div>
+      <div className="flex-1 min-h-[350px] -ml-6 -mb-4">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
-            <XAxis dataKey="name" stroke="var(--color-borderAccent)" fontSize={10} tickLine={false} axisLine={false} />
-            <YAxis stroke="var(--color-borderAccent)" fontSize={10} tickLine={false} axisLine={false} />
             <Tooltip 
-              contentStyle={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-borderAccent)', fontSize: '12px' }}
-              itemStyle={{ color: 'var(--color-textPrimary)' }}
+              contentStyle={{ backgroundColor: 'var(--color-surfaceHover)', borderColor: 'var(--color-borderAccent)', fontSize: '12px', borderRadius: '8px', backdropFilter: 'blur(8px)' }}
+              itemStyle={{ color: 'var(--color-textPrimary)', fontWeight: 'bold' }}
             />
-            <Line type="monotone" dataKey="sp500" stroke="var(--color-textSecondary)" strokeWidth={2} dot={false} strokeDasharray="3 3" />
-            <Line type="monotone" dataKey="port" stroke="var(--color-primary)" strokeWidth={3} dot={false} style={{ filter: 'drop-shadow(var(--shadow-glow-accent))' }} />
+            <Line type="monotone" dataKey="sp500" stroke="var(--color-textSecondary)" strokeWidth={2} dot={false} strokeDasharray="4 4" opacity={0.5} />
+            <Line type="monotone" dataKey="port" stroke="var(--color-primary)" strokeWidth={4} dot={false} style={{ filter: 'drop-shadow(var(--shadow-glow-accent)) drop-shadow(0 10px 10px rgba(var(--color-primary), 0.2))' }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
