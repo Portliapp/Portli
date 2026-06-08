@@ -1,129 +1,362 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap');
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --bg-app: #060b13; /* Very dark blue/black */
-    --bg-card: #0c1322; /* Slightly lighter blue/black */
-    --bg-card-hover: #111a2e;
-    --border-main: #1e293b; 
-    --border-accent: #334155; 
-    
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8; 
-    
-    --color-profit: #10b981; 
-    --color-loss: #f43f5e; 
-    --color-accent: #06b6d4; /* Cyan */
-    --color-accent-hover: #0891b2;
-    --color-magenta: #d946ef;
-    
-    --glow-profit: 0 0 8px rgba(16, 185, 129, 0.4);
-    --glow-loss: 0 0 8px rgba(244, 63, 94, 0.4);
-    --glow-accent: 0 0 12px rgba(6, 182, 212, 0.4);
-    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-  }
 
-  body {
-    background-color: var(--bg-app);
-    color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
+:root {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
-@theme {
-  --color-background: var(--bg-app);
-  --color-surface: var(--bg-card);
-  --color-surfaceHover: var(--bg-card-hover);
-  --color-border: var(--border-main);
-  --color-borderAccent: var(--border-accent);
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
+}
+
+/* ==========================================================================
+   THEME CONFIGURATIONS
+   ========================================================================== */
+
+/* 1. NEON THEME (Default Immersive Cyberpunk Turquoise & Emerald Vibe) */
+.theme-neon {
+  --bg: #07090f;
+  --card: #111927;
+  --border: #1a2332;
+  --cyan: #00c2ff;
+  --emerald: #00e5a0;
+  --neon-red: #ff3d6b;
+  --text: #ffffff;
+  --text-dim: #94a3b8;
+  --input-bg: #07090f;
   
-  --color-primary: var(--color-accent);
-  --color-primaryHover: var(--color-accent-hover);
+  --shadow-pnl: 0 0 10px rgba(0, 229, 160, 0.2);
+}
+
+/* 2. SUN THEME (Classic clean high-contrast light theme) */
+.theme-sun {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --cyan: #0284c7; /* Visible ocean sky blue */
+  --emerald: #059669; /* Deep contrast emerald green */
+  --neon-red: #dc2626; /* Deep crimson red */
+  --text: #0f172a; /* Slate 900 list text */
+  --text-dim: #64748b; /* Slate 500 label text */
+  --input-bg: #f1f5f9;
   
-  --color-success: var(--color-profit);
-  --color-danger: var(--color-loss);
-  --color-textPrimary: var(--text-primary);
-  --color-textSecondary: var(--text-secondary);
+  --shadow-pnl: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* 3. DARK THEME (Classic clean pure dark theme - stealth & carbon, no heavy neons) */
+.theme-dark {
+  --bg: #0b0c10;
+  --card: #12131a;
+  --border: #212330;
+  --cyan: #3b82f6; /* Modern Blue */
+  --emerald: #10b981; /* Standard Green */
+  --neon-red: #ef4444; /* Standard Red */
+  --text: #f3f4f6; /* Soft gray 100 */
+  --text-dim: #9ca3af; /* Gray 400 */
+  --input-bg: #15161f;
   
-  --font-sans: 'Inter', sans-serif;
-  --font-mono: 'Space Mono', monospace;
-
-  --shadow-glow-profit: var(--glow-profit);
-  --shadow-glow-loss: var(--glow-loss);
-  --shadow-glow-accent: var(--glow-accent);
-  --shadow-card-theme: var(--shadow-card);
-  
-  --animate-marquee: marquee 30s linear infinite;
+  --shadow-pnl: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-@layer components {
-  .card {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 0.5rem; /* Slightly sharper corners */
-    padding: 1.25rem;
-    box-shadow: var(--shadow-card-theme);
-  }
-  
-  .text-profit {
-    color: var(--color-success);
-  }
 
-  .text-loss {
-    color: var(--color-danger);
-  }
-  
-  .border-glow-accent {
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-glow-accent);
-  }
-  
-  .border-glow-magenta {
-    border-color: var(--color-magenta);
-    box-shadow: 0 0 10px rgba(217, 70, 239, 0.3);
-  }
+/* ==========================================================================
+   GLOW AND NEON UTILITY CONFIGURATIONS
+   ========================================================================== */
 
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 500;
-    border-radius: 0.5rem;
-    transition: all 0.2s;
-    font-size: 0.875rem;
-    padding: 0.5rem 1rem;
-  }
-
-  .btn-primary {
-    background-color: var(--color-primary);
-    color: #000;
-    font-weight: 700;
-  }
-  .btn-primary:hover {
-    background-color: var(--color-primaryHover);
-    box-shadow: var(--shadow-glow-accent);
-  }
+/* Neon glow box shadows */
+.theme-neon .ai-glow {
+  box-shadow: inset 0 0 20px rgba(0, 194, 255, 0.04), 0 0 15px rgba(0, 194, 255, 0.015);
+}
+.theme-sun .ai-glow {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.04);
+}
+.theme-dark .ai-glow {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+/* Pulse / Interactive Border glow */
+.theme-neon .neon-border {
+  border-color: var(--border);
+  transition: all 0.25s ease;
+}
+.theme-neon .neon-border:hover {
+  border-color: rgba(0, 194, 255, 0.35);
+  box-shadow: 0 0 15px rgba(0, 194, 255, 0.06);
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.theme-sun .neon-border {
+  border-color: var(--border);
+  transition: all 0.25s ease;
 }
-::-webkit-scrollbar-track {
-  background: var(--bg-app);
+.theme-sun .neon-border:hover {
+  border-color: rgba(2, 132, 199, 0.25);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
 }
-::-webkit-scrollbar-thumb {
-  background-color: var(--border-accent);
-  border-radius: 9999px;
+
+.theme-dark .neon-border {
+  border-color: var(--border);
+  transition: all 0.25s ease;
 }
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-textSecondary);
+.theme-dark .neon-border:hover {
+  border-color: rgba(59, 130, 246, 0.25);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.04);
 }
+
+/* Green dynamic gains panel shadows */
+.emerald-glow {
+  box-shadow: var(--shadow-pnl);
+}
+
+
+/* ==========================================================================
+   INTELLIGENT HARDCODED CLASS OVERRIDES FOR SEAMLESS COMPATIBILITY
+   ========================================================================== */
+
+/* Overriding background tags */
+.bg-\[\#111927\] {
+  background-color: var(--card) !important;
+}
+.bg-\[\#07090f\] {
+  background-color: var(--input-bg) !important;
+}
+.bg-\[\#07090f\]\/60 {
+  background-color: rgba(0, 0, 0, 0.15) !important;
+}
+.theme-sun .bg-\[\#07090f\]\/60 {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+.bg-\[\#0b0f19\] {
+  background-color: var(--card) !important;
+  border-color: var(--border) !important;
+}
+.theme-sun .bg-\[\#0b0f19\] {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+.bg-\[\#0a0f1d\]\/40 {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+.theme-sun .bg-\[\#0a0f1d\]\/40 {
+  background-color: rgba(241, 245, 249, 0.6) !important;
+}
+.theme-sun .bg-\[\#080d17\]\/50 {
+  background-color: #e2e8f0 !important;
+}
+
+/* Overriding borders */
+.border-\[\#1a2332\] {
+  border-color: var(--border) !important;
+}
+.border-b-\[\#1a2332\]\/30 {
+  border-color: var(--border) !important;
+}
+.border-\[\#1a2332\]\/60 {
+  border-color: var(--border) !important;
+}
+.border-\[\#1a2332\]\/80 {
+  border-color: var(--border) !important;
+}
+
+/* Overriding typography */
+.text-white {
+  color: var(--text) !important;
+}
+.text-gray-300 {
+  color: var(--text) !important;
+  opacity: 0.9;
+}
+.text-gray-400 {
+  color: var(--text-dim) !important;
+}
+.text-gray-500 {
+  color: var(--text-dim) !important;
+  opacity: 0.8;
+}
+
+/* Overriding dynamic colors */
+.text-\[\#00c2ff\] {
+  color: var(--cyan) !important;
+}
+.hover\:text-\[\#00c2ff\]:hover {
+  color: var(--cyan) !important;
+}
+.hover\:border-\[\#00c2ff\]\/50:hover {
+  border-color: var(--cyan) !important;
+}
+.bg-\[\#00c2ff\] {
+  background-color: var(--cyan) !important;
+}
+.hover\:bg-\[\#00c2ff\]\/90:hover {
+  background-color: var(--cyan) !important;
+  opacity: 0.9;
+}
+.bg-\[\#00c2ff\]\/10 {
+  background-color: var(--badge-bg) !important;
+}
+.bg-\[\#00c2ff\]\/15 {
+  background-color: var(--badge-bg) !important;
+}
+.border-\[\#00c2ff\]\/40 {
+  border-color: var(--cyan) !important;
+  opacity: 0.5;
+}
+.border-\[\#00c2ff\]\/25 {
+  border-color: var(--cyan) !important;
+  opacity: 0.35;
+}
+.focus\:border-\[\#00c2ff\]:focus {
+  border-color: var(--cyan) !important;
+}
+
+.text-\[\#00e5a0\] {
+  color: var(--emerald) !important;
+}
+.bg-\[\#00e5a0\]\/10 {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+}
+.border-\[\#00e5a0\]\/20 {
+  border-color: var(--emerald) !important;
+  opacity: 0.3;
+}
+.bg-\[\#00e5a0\] {
+  background-color: var(--emerald) !important;
+}
+
+.text-\[\#ff3d6b\] {
+  color: var(--neon-red) !important;
+}
+.bg-\[\#ff3d6b\]\/10 {
+  background-color: rgba(239, 68, 68, 0.11) !important;
+}
+.border-\[\#ff3d6b\]\/30 {
+  border-color: var(--neon-red) !important;
+  opacity: 0.3;
+}
+.hover\:bg-\[\#ff3d6b\]\/20:hover {
+  background-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+
+/* ==========================================================================
+   SCROLLBAR STYLES
+   ========================================================================== */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--cyan);
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ==========================================================================
+   VIEW TRANSITION API & CLASS TRANSITION STYLING
+   ========================================================================== */
+
+/* Configure duration & easing for the native browser screenshot-based cross-fade */
+::view-transition-group(root) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(root) {
+  animation: 400ms cubic-bezier(0.16, 1, 0.3, 1) both fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 400ms cubic-bezier(0.16, 1, 0.3, 1) both fade-in;
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Ensure secondary visual elements like buttons, inputs, tables also transition gracefully */
+button, input, select, textarea, div, section, header, main, table, tr, td, th {
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              color 0.4s ease, 
+              box-shadow 0.4s ease, 
+              text-shadow 0.4s ease;
+}
+
+/* ==========================================================================
+   RECHARTS SVG COLOR SYSTEM OVERRIDES (ZERO FLICKERING)
+   ========================================================================== */
+
+/* Theme-adaptable grid lines */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: var(--border) !important;
+  stroke-opacity: 0.35 !important;
+  transition: stroke 0.4s ease, stroke-opacity 0.4s ease !important;
+}
+
+/* Axis borders */
+.recharts-xAxis line,
+.recharts-yAxis line {
+  stroke: var(--border) !important;
+  transition: stroke 0.4s ease !important;
+}
+
+/* Axis ticks and text labels */
+.recharts-xAxis text,
+.recharts-yAxis text,
+.recharts-label,
+.recharts-legend-item-text {
+  fill: var(--text-dim) !important;
+  color: var(--text-dim) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 9px !important;
+  transition: fill 0.4s ease, color 0.4s ease !important;
+}
+
+/* Responsive container hover/active cursor indicator line */
+.recharts-tooltip-cursor {
+  stroke: var(--border) !important;
+  stroke-opacity: 0.5 !important;
+  transition: stroke 0.4s ease, stroke-opacity 0.4s ease !important;
+}
+
+/* Recharts Native Tooltip Popover formatting */
+.recharts-default-tooltip {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-pnl) !important;
+  color: var(--text) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 10px !important;
+  padding: 8px 12px !important;
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease !important;
+}
+
+/* Dynamic color transitions for Chart Areas, Line Curves, Scatter, and Bars */
+path.recharts-curve,
+path.recharts-rectangle,
+path.recharts-area,
+.recharts-layer path,
+.recharts-sector {
+  transition: stroke 0.4s ease, fill 0.4s ease, fill-opacity 0.4s ease !important;
+}
+
