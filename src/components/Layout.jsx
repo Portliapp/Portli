@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { LayoutDashboard, Wallet, ArrowRightLeft, Activity, PieChart, FileText, Settings, LogOut, Search, Sparkles } from 'lucide-react'
+import { fetchFinnhubQuote } from '../services/dataService'
 
 export default function Layout({ children }) {
   const navItems = [
@@ -12,15 +13,38 @@ export default function Layout({ children }) {
     { label: 'IMPOSTAZIONI', icon: Settings, active: false },
   ]
 
-  const tickers = [
-    { symbol: 'EUR/USD', price: '1.0838', change: '+0%', positive: true },
-    { symbol: 'GOLD', price: '€74.82', change: '-0.06%', positive: false },
-    { symbol: 'AAPL', price: '€381.19', change: '+1.37%', positive: true },
-    { symbol: 'NVDA', price: '€124.64', change: '+1.62%', positive: true },
-    { symbol: 'US10Y', price: '4.424%', change: '+0.48%', positive: true },
-    { symbol: 'BTC', price: '€64,210', change: '-1.20%', positive: false },
-    { symbol: 'ETH', price: '€3,450', change: '+2.10%', positive: true },
-  ]
+  const [tickers, setTickers] = useState([
+    { symbol: 'AAPL', price: '...', change: '...', positive: true },
+    { symbol: 'MSFT', price: '...', change: '...', positive: true },
+    { symbol: 'NVDA', price: '...', change: '...', positive: true },
+    { symbol: 'TSLA', price: '...', change: '...', positive: false },
+    { symbol: 'AMZN', price: '...', change: '...', positive: true },
+  ])
+
+  useEffect(() => {
+    async function loadRealData() {
+      const updatedTickers = await Promise.all(
+        tickers.map(async (t) => {
+          const data = await fetchFinnhubQuote(t.symbol)
+          if (data && data.price) {
+            return {
+              ...t,
+              price: `$${data.price.toFixed(2)}`,
+              change: `${data.changePercent > 0 ? '+' : ''}${data.changePercent.toFixed(2)}%`,
+              positive: data.changePercent >= 0
+            }
+          }
+          return t
+        })
+      )
+      setTickers(updatedTickers)
+    }
+    
+    loadRealData()
+    // Aggiorna ogni 60 secondi
+    const interval = setInterval(loadRealData, 60000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-textPrimary selection:bg-primary/30">
