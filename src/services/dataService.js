@@ -8,7 +8,6 @@ export async function fetchFinnhubQuote(ticker) {
     const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_API_KEY}`)
     if (!res.ok) throw new Error('Errore nella chiamata a Finnhub')
     const data = await res.json()
-    // c = current price, dp = percent change
     return {
       price: data.c,
       changePercent: data.dp
@@ -21,6 +20,7 @@ export async function fetchFinnhubQuote(ticker) {
 
 // Aggiorna la cache su Supabase
 export async function updatePriceCache(ticker, price, changePercent) {
+  if (!price) return
   const { error } = await supabase
     .from('market_prices')
     .upsert({ 
@@ -35,37 +35,33 @@ export async function updatePriceCache(ticker, price, changePercent) {
   }
 }
 
-// Recupera asset utente e relativi prezzi
-export async function fetchUserAssets() {
-  const { data: assets, error } = await supabase
-    .from('assets')
-    .select('*')
-    .order('created_at', { ascending: false })
+// Simuliamo il portafoglio dell'utente e andiamo a prendere i dati REALI da Finnhub/Supabase
+export async function getLiveMockAssets() {
+  const mockPortfolio = [
+    { ticker: 'AAPL', name: 'Apple Inc.', type: 'STOCK', quantity: 15, avgPrice: 150.00 },
+    { ticker: 'TSLA', name: 'Tesla Inc.', type: 'STOCK', quantity: 20, avgPrice: 190.00 },
+    { ticker: 'NVDA', name: 'Nvidia Corp.', type: 'STOCK', quantity: 5, avgPrice: 90.00 },
+    { ticker: 'MSFT', name: 'Microsoft Corp.', type: 'STOCK', quantity: 10, avgPrice: 380.00 },
+  ]
 
-  if (error) {
-    console.error("Errore recupero assets:", error)
-    return []
-  }
-
-  // Per ogni asset, controlla la cache dei prezzi (simuliamo un Join semplificato)
-  const assetsWithPrices = await Promise.all(assets.map(async (asset) => {
-    // Prima controlliamo se esiste in cache
+  const assetsWithPrices = await Promise.all(mockPortfolio.map(async (asset) => {
+    // 1. Controlla la cache in Supabase
     const { data: cacheData } = await supabase
       .from('market_prices')
       .select('*')
       .eq('ticker', asset.ticker)
       .single()
 
-    let currentPrice = 0
+    let currentPrice = asset.avgPrice
     let changePercent = 0
 
-    // Se non c'è in cache o è vecchio (potremmo aggiungere logica temporale), chiamiamo Finnhub
+    // 2. Se non in cache o vogliamo aggiornare, chiama Finnhub
     if (!cacheData) {
       const liveData = await fetchFinnhubQuote(asset.ticker)
       if (liveData && liveData.price) {
         currentPrice = liveData.price
         changePercent = liveData.changePercent
-        // Aggiorna cache
+        // 3. Salva nel database Supabase
         await updatePriceCache(asset.ticker, currentPrice, changePercent)
       }
     } else {
@@ -73,35 +69,21 @@ export async function fetchUserAssets() {
       changePercent = cacheData.change_percent
     }
 
-    // Calcolo PNL Virtuale
+    // 4. Matematica Esatta della vecchia versione di Portli (Total Value, PNL)
     const totalValue = currentPrice * asset.quantity
-    const invested = asset.average_price * asset.quantity
+    const invested = asset.avgPrice * asset.quantity
     const pnl = totalValue - invested
+    const pnlPercent = invested > 0 ? (pnl / invested) * 100 : 0
 
     return {
       ...asset,
       currentPrice,
       changePercent,
       totalValue,
-      pnl
+      pnl,
+      pnlPercent
     }
   }))
 
-  return assetsWithPrices
-}
-
-// Aggiungi un nuovo asset
-export async function addAsset(userId, ticker, type, quantity, avgPrice) {
-  const { data, error } = await supabase
-    .from('assets')
-    .insert([{
-      user_id: userId,
-      ticker: ticker.toUpperCase(),
-      asset_type: type,
-      quantity,
-      average_price: avgPrice
-    }])
-  
-  if (error) throw error
-  return data
+  return assetsWithPrices.sort((a, b) => b.totalValue - a.totalValue)
 }
