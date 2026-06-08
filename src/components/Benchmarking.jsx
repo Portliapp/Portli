@@ -31,7 +31,24 @@ const CustomTooltip = ({ active, payload, label }) => {
   }
   return null
 }
-
+const fetchAIAnalysis = async (data) => {
+  const workerUrl = 'https://portli-ai-analyzer.dry-cloud-b294.workers.dev/'; // <--- Incolla qui l'URL del tuo Worker
+  try {
+    const response = await fetch(workerUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chartData: data,
+        question: "Analizza questo grafico radar di benchmarking finanziario e spiega perché il portafoglio dell'utente è migliore o peggiore del benchmark."
+      })
+    });
+    const result = await response.json();
+    return result.response;
+  } catch (error) {
+    console.error("Errore AI:", error);
+    return "Impossibile contattare l'analista AI.";
+  }
+};
 export default function Benchmarking() {
   return (
     <div className="card bg-surface/50 border-border/50 backdrop-blur-sm p-6 flex flex-col h-full relative overflow-hidden group">
@@ -50,7 +67,16 @@ export default function Benchmarking() {
         </span>
       </div>
       <p className="text-xs text-textSecondary mb-6 relative z-10">Confronto metriche avanzate del portafoglio vs S&P 500.</p>
-
+<button 
+  className="mt-2 px-3 py-1 bg-primary/20 hover:bg-primary/30 text-primary text-[10px] font-bold rounded-md border border-primary/20 transition-all cursor-pointer"
+  onClick={async () => {
+    alert("L'AI sta analizzando i dati...");
+    const spiegazione = await fetchAIAnalysis(benchmarkData);
+    alert(spiegazione);
+  }}
+>
+  Analizza Grafico con AI
+</button>
       <div className="flex-1 min-h-[300px] w-full relative z-10 -ml-4">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart cx="50%" cy="50%" outerRadius="70%" data={benchmarkData}>
