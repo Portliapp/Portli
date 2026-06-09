@@ -268,30 +268,65 @@ export default function AuthView({ onAuthSuccess }: AuthViewProps) {
         }
       `}</style>
 
-      {/* Embedded High-Fidelity Asset & Network Background Layout (Layered behind main card) */}
-      {/* BACKGROUND: Minimalist Nebulosa AI / Glassmorphism */}
+      {/* BACKGROUND: Premium AI Brain Neural Mesh */}
       <div 
-        id="qevora-geometric-background-network"
-        className="absolute inset-0 pointer-events-none select-none transition-opacity duration-700"
-        style={{ zIndex: 1, backgroundColor: '#030509' }}
+        id="portli-ai-background"
+        className="absolute inset-0 pointer-events-none select-none overflow-hidden"
+        style={{ zIndex: 1, backgroundColor: '#05070e' }}
       >
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)',
-          backgroundSize: '30px 30px'
-        }} />
+        {/* Animated Radial Gradients (AI Orbs) */}
         <motion.div
           className="absolute rounded-full blur-[100px]"
-          style={{ top: '10%', left: '10%', width: '50vw', height: '50vw', maxWidth: '600px', maxHeight: '600px', backgroundColor: '#863bff', mixBlendMode: 'screen' }}
-          animate={{ scale: [1, 1.1, 0.9, 1], opacity: [0.15, 0.35, 0.15], x: [0, 40, -20, 0], y: [0, -40, 20, 0] }}
-          transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ top: '0%', left: '0%', width: '70vw', height: '70vw', maxWidth: '800px', maxHeight: '800px', backgroundColor: '#863bff', mixBlendMode: 'screen' }}
+          animate={{ scale: [1, 1.15, 0.95, 1], opacity: [0.25, 0.45, 0.25], x: [0, 50, -30, 0], y: [0, -50, 30, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="absolute rounded-full blur-[120px]"
-          style={{ bottom: '10%', right: '5%', width: '45vw', height: '45vw', maxWidth: '500px', maxHeight: '500px', backgroundColor: '#00c2ff', mixBlendMode: 'screen' }}
-          animate={{ scale: [1, 1.2, 0.95, 1], opacity: [0.15, 0.3, 0.15], x: [0, -50, 30, 0], y: [0, 30, -30, 0] }}
-          transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+          style={{ bottom: '-10%', right: '-10%', width: '60vw', height: '60vw', maxWidth: '700px', maxHeight: '700px', backgroundColor: '#00c2ff', mixBlendMode: 'screen' }}
+          animate={{ scale: [1, 1.2, 0.9, 1], opacity: [0.2, 0.4, 0.2], x: [0, -60, 40, 0], y: [0, 40, -40, 0] }}
+          transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
         />
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%)', backgroundSize: '100% 4px', opacity: 0.1 }} />
+
+        {/* Neural Network Abstract Grid Mask */}
+        <div 
+          className="absolute inset-0 opacity-30" 
+          style={{
+            backgroundImage: `radial-gradient(circle at center, transparent 0%, #05070e 80%), linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`,
+            backgroundSize: '100% 100%, 40px 40px, 40px 40px',
+            backgroundPosition: 'center center'
+          }} 
+        />
+        
+        {/* Floating "data points" simulating market transactions */}
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={`data-point-${i}`}
+            className="absolute rounded-full"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              width: `${Math.random() * 4 + 2}px`,
+              height: `${Math.random() * 4 + 2}px`,
+              backgroundColor: i % 2 === 0 ? '#00c2ff' : '#863bff',
+              boxShadow: `0 0 10px ${i % 2 === 0 ? '#00c2ff' : '#863bff'}`,
+            }}
+            animate={{
+              y: [0, -100, 0],
+              opacity: [0, 0.8, 0],
+              scale: [0, 1.5, 0]
+            }}
+            transition={{
+              duration: Math.random() * 10 + 10,
+              repeat: Infinity,
+              ease: "linear",
+              delay: Math.random() * 5
+            }}
+          />
+        ))}
+
+        {/* Overlay Dark vignette to focus center */}
+        <div className="absolute inset-0" style={{ boxShadow: 'inset 0 0 200px rgba(0,0,0,0.95)' }} />
       </div>
 
       {/* Main card panel wrapper */}
@@ -310,14 +345,15 @@ export default function AuthView({ onAuthSuccess }: AuthViewProps) {
           id="qevora-auth-card"
           className="relative w-full shadow-2xl"
           style={{
-            backgroundColor: 'rgba(17, 25, 39, 0.45)',
+            maxWidth: '420px',
+            backgroundColor: 'rgba(13, 17, 26, 0.75)',
             border: `1px solid rgba(255, 255, 255, 0.08)`,
             borderRadius: '24px',
             padding: '36px',
             zIndex: 10,
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.1)'
+            backdropFilter: 'blur(30px)',
+            WebkitBackdropFilter: 'blur(30px)',
+            boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255,255,255,0.1)'
           }}
         >
         {/* Success Toast Indicator */}
