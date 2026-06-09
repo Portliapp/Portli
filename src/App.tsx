@@ -45,18 +45,8 @@ import {
 import { jsPDF } from 'jspdf';
 
 export default function App() {
-  // Load transactions and cache them in localStorage for excellent persistence:
-  const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const raw = localStorage.getItem('inv_tracker_txs');
-    if (raw) {
-      try {
-        return JSON.parse(raw);
-      } catch (e) {
-        console.error('Failed to parse cached txs, reverting to seeding:', e);
-      }
-    }
-    return initialTransactions;
-  });
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
 
   // Custom current market pricing state for customized dynamic rebalancing
   const [customPrices, setCustomPrices] = useState<Record<string, number>>(() => {
@@ -125,38 +115,62 @@ export default function App() {
   const [showPremiumModal, setShowPremiumModal] = useState<boolean>(false);
 
   // Authentication State
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return !!localStorage.getItem('qevora_auth_token');
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   // User Profile States
-  const [userName, setUserName] = useState<string>(() => {
-    return localStorage.getItem('qevora_username') || localStorage.getItem('portly_username') || 'Davide';
-  });
-  const [userTier, setUserTier] = useState<string>(() => {
-    return localStorage.getItem('qevora_tier') || localStorage.getItem('portly_tier') || 'Piano Free';
-  });
+  const [userName, setUserName] = useState<string>('Ospite');
+  const [userTier, setUserTier] = useState<string>('Piano Base');
 
-  const handleAuthSuccess = (userObj: { name: string; tier: string; token: string }) => {
+  useEffect(() => {
+    async function initSession() {
+      try {
+        const { supabaseService } = await import('./services/supabaseService');
+        const session = await supabaseService.getSession();
+        if (session) {
+          setIsAuthenticated(true);
+          setUserId(session.user.id);
+          setUserName(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Utente');
+          setUserTier(session.user.user_metadata?.tier || 'Piano Base');
+          
+          const txs = await supabaseService.getTransactions();
+          setTransactions(txs);
+        } else {
+          setIsAuthenticated(false);
+          setUserId(null);
+        }
+      } catch (err) {
+        console.error("Error initializing session:", err);
+      } finally {
+        setIsLoadingData(false);
+        setTimeout(() => setShowSplash(false), 500); // Hide splash after load
+      }
+    }
+    initSession();
+  }, []);
+
+  const handleAuthSuccess = async (userObj: { name: string; tier: string; token: string }) => {
     setUserName(userObj.name);
     setUserTier(userObj.tier);
     setIsAuthenticated(true);
+    
+    // Reload transactions for the new user
+    const { supabaseService } = await import('./services/supabaseService');
+    const session = await supabaseService.getSession();
+    if (session) {
+      setUserId(session.user.id);
+      const txs = await supabaseService.getTransactions();
+      setTransactions(txs);
+    }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('qevora_auth_token');
+  const handleLogout = async () => {
+    const { supabaseService } = await import('./services/supabaseService');
+    await supabaseService.signOut();
     setIsAuthenticated(false);
+    setUserId(null);
+    setTransactions([]);
   };
-
-  // Reload user details whenever profile changes
-  useEffect(() => {
-    const handleProfileSync = () => {
-      setUserName(localStorage.getItem('qevora_username') || localStorage.getItem('portly_username') || 'Davide');
-      setUserTier(localStorage.getItem('qevora_tier') || localStorage.getItem('portly_tier') || 'Piano Free');
-    };
-    window.addEventListener('storage', handleProfileSync);
-    return () => window.removeEventListener('storage', handleProfileSync);
-  }, []);
 
   // activeSection view router: 'dashboard' | 'holdings' | 'transazioni' | 'analytics' | 'reports' | 'impostazioni' | 'confronto'
   const [activeSection, setActiveSection] = useState<'dashboard' | 'holdings' | 'transazioni' | 'analytics' | 'reports' | 'impostazioni' | 'confronto'>('dashboard');
@@ -185,10 +199,8 @@ export default function App() {
   // Global search input for analyzed stock:
   const [searchVal, setSearchVal] = useState<string>('');
 
-  // Auto-sync transactions to localStorage whenever changed
-  useEffect(() => {
-    localStorage.setItem('inv_tracker_txs', JSON.stringify(transactions));
-  }, [transactions]);
+  // Remove old localStorage auto-sync
+  // We now rely on Supabase for persistence.
 
   // LIVE FINNHUB INTEGRATION
   useEffect(() => {
@@ -319,22 +331,35 @@ export default function App() {
   }, [portfolioState.totalCost, portfolioState.totalValue]);
 
   // Transaction Event Handlers
-  const handleAddTransaction = (newTx: Omit<Transaction, 'id'>) => {
-    const txComple: Transaction = {
-      ...newTx,
-      id: `tx-${Date.now()}`
-    };
-    setTransactions(prev => [...prev, txComple]);
+  const handleAddTransaction = async (newTx: Omit<Transaction, 'id'>) => {
+    if (!userId) return;
+    try {
+      const { supabaseService } = await import('./services/supabaseService');
+      const savedTx = await supabaseService.addTransaction(newTx, userId);
+      setTransactions(prev => [...prev, savedTx]);
+    } catch (err) {
+      console.error("Failed to save transaction to Cloud:", err);
+      alert("Errore durante il salvataggio della transazione nel Cloud.");
+    }
   };
 
-  const handleRemoveTransaction = (id: string | string[]) => {
+  const handleRemoveTransaction = async (id: string | string[]) => {
     const idsToRemove = Array.isArray(id) ? id : [id];
-    setTransactions(prev => prev.filter(tx => !idsToRemove.includes(tx.id)));
+    try {
+      const { supabaseService } = await import('./services/supabaseService');
+      for (const txId of idsToRemove) {
+        await supabaseService.deleteTransaction(txId);
+      }
+      setTransactions(prev => prev.filter(tx => !idsToRemove.includes(tx.id)));
+    } catch (err) {
+      console.error("Failed to delete transaction from Cloud:", err);
+      alert("Errore durante l'eliminazione della transazione.");
+    }
   };
 
   const handleResetData = () => {
-    localStorage.setItem('inv_tracker_txs', JSON.stringify(DEMO_TRANSACTIONS));
-    setTransactions(DEMO_TRANSACTIONS);
+    // Legacy function, no longer used with real database
+    console.warn("Reset data not supported with cloud DB.");
   };
 
   const handleExportReportPDF = () => {
