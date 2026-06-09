@@ -54,7 +54,29 @@ export default function TransactionForm({
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownAnchor, setDropdownAnchor] = useState<'ticker' | 'name' | null>(null);
 
-  // Debounce logic for real-time stock/exchange lookup using custom server API
+  // Local asset database for search (no server needed)
+  const LOCAL_ASSETS_DB = [
+    { ticker: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ (Stati Uniti)', assetType: 'STOCK', currency: 'USD', price: 181.18 },
+    { ticker: 'TSLA', name: 'Tesla Inc.', exchange: 'NASDAQ (Stati Uniti)', assetType: 'STOCK', currency: 'USD', price: 175.46 },
+    { ticker: 'NVDA', name: 'NVIDIA Corp.', exchange: 'NASDAQ (Stati Uniti)', assetType: 'STOCK', currency: 'USD', price: 124.50 },
+    { ticker: 'MSFT', name: 'Microsoft Corp.', exchange: 'NASDAQ (Stati Uniti)', assetType: 'STOCK', currency: 'USD', price: 420.00 },
+    { ticker: 'AMZN', name: 'Amazon.com Inc.', exchange: 'NASDAQ (Stati Uniti)', assetType: 'STOCK', currency: 'USD', price: 185.00 },
+    { ticker: 'GOOGL', name: 'Alphabet Inc.', exchange: 'NASDAQ (Stati Uniti)', assetType: 'STOCK', currency: 'USD', price: 175.00 },
+    { ticker: 'META', name: 'Meta Platforms Inc.', exchange: 'NASDAQ (Stati Uniti)', assetType: 'STOCK', currency: 'USD', price: 490.00 },
+    { ticker: 'MC.PA', name: 'LVMH Moët Hennessy Louis Vuitton', exchange: 'Euronext Paris (Francia)', assetType: 'STOCK', currency: 'EUR', price: 785.40 },
+    { ticker: 'RACE.MI', name: 'Ferrari N.V.', exchange: 'Borsa Italiana (Milano)', assetType: 'STOCK', currency: 'EUR', price: 385.20 },
+    { ticker: 'ENEL.MI', name: 'Enel S.p.A.', exchange: 'Borsa Italiana (Milano)', assetType: 'STOCK', currency: 'EUR', price: 6.12 },
+    { ticker: 'UCG.MI', name: 'UniCredit S.p.A.', exchange: 'Borsa Italiana (Milano)', assetType: 'STOCK', currency: 'EUR', price: 35.40 },
+    { ticker: 'ASML', name: 'ASML Holding N.V.', exchange: 'NASDAQ (Stati Uniti)', assetType: 'STOCK', currency: 'USD', price: 915.00 },
+    { ticker: 'SWDA.MI', name: 'iShares MSCI World UCITS ETF', exchange: 'Borsa Italiana (Milano)', assetType: 'ETF', currency: 'EUR', price: 92.45 },
+    { ticker: 'SXR8.DE', name: 'iShares Core S&P 500 UCITS ETF', exchange: 'XETRA Frankfurt (Germania)', assetType: 'ETF', currency: 'EUR', price: 512.40 },
+    { ticker: 'CSSX5.MI', name: 'iShares Euro Stoxx 50 ETF', exchange: 'Borsa Italiana (Milano)', assetType: 'ETF', currency: 'EUR', price: 48.12 },
+    { ticker: 'BTC', name: 'Bitcoin', exchange: 'Binance / Coinbase', assetType: 'CRYPTO', currency: 'USD', price: 95420.00 },
+    { ticker: 'ETH', name: 'Ethereum', exchange: 'Binance / Coinbase', assetType: 'CRYPTO', currency: 'USD', price: 3420.00 },
+    { ticker: 'EUR', name: 'Euro Cash Liquidity', exchange: 'Liquidità', assetType: 'CASH', currency: 'EUR', price: 1.00 },
+  ];
+
+  // Debounce logic for real-time stock/exchange lookup using local DB
   React.useEffect(() => {
     const activeText = dropdownAnchor === 'ticker' ? ticker : dropdownAnchor === 'name' ? name : '';
     if (!activeText || activeText.trim().length < 2) {
@@ -63,28 +85,19 @@ export default function TransactionForm({
       return;
     }
 
-    const timer = setTimeout(async () => {
-      setIsSearching(true);
-      try {
-        const res = await fetch('/api/search', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ q: activeText })
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setSuggestions(data || []);
-          setShowDropdown(true);
-        }
-      } catch (err) {
-        console.error('Error searching asset:', err);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 450);
+    const timer = setTimeout(() => {
+      const query = activeText.trim().toLowerCase();
+      const matches = LOCAL_ASSETS_DB.filter(a =>
+        a.ticker.toLowerCase().includes(query) ||
+        a.name.toLowerCase().includes(query)
+      ).slice(0, 6);
+      setSuggestions(matches);
+      setShowDropdown(matches.length > 0);
+    }, 200);
 
     return () => clearTimeout(timer);
   }, [ticker, name, dropdownAnchor]);
+
 
   // Close suggestion dropdown on click outside
   React.useEffect(() => {

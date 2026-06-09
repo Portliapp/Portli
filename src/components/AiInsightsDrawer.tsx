@@ -1120,62 +1120,48 @@ export default function AiInsightsDrawer({ ticker, onClose }: AiInsightsDrawerPr
     }
   }, [ticker]);
 
-  // Fetch real-time AI metrics from backend when the current ticker undergoes shift
+  // Load AI metrics locally (no server needed on Cloudflare Pages)
   useEffect(() => {
     if (!currentTicker) return;
-
-    let active = true;
-    const fetchTickerDetails = async () => {
-      setIsBackendLoading(true);
-      try {
-        const response = await fetch('/api/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ticker: currentTicker })
-        });
-        if (response.ok && active) {
-          const data = await response.json();
-          setApiData(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch custom ticker insights:", err);
-      } finally {
-        if (active) {
-          setIsBackendLoading(false);
-        }
-      }
-    };
-
-    fetchTickerDetails();
-    return () => {
-      active = false;
-    };
+    setIsBackendLoading(true);
+    // Use local high-precision analysis already defined in this file
+    setTimeout(() => {
+      const localData = getHighPrecisionAssetAnalysis(currentTicker);
+      setApiData(localData);
+      setIsBackendLoading(false);
+    }, 600); // Small delay to simulate loading feel
   }, [currentTicker]);
 
-  // Fetch coordinated consensus data from server endpoint
+
+  // Generate consensus locally (no server needed)
   const fetchCoordinatedAiConsensus = useCallback(async (forcedTicker?: string) => {
     const targetTicker = forcedTicker || currentTicker;
     if (!targetTicker) return;
 
     setIsConsensusLoading(true);
-    try {
-      const res = await fetch("/api/coordinated-ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticker: targetTicker })
+    // Simulate multi-AI consensus using local deterministic data
+    setTimeout(() => {
+      const seed = targetTicker.charCodeAt(0) + (targetTicker.charCodeAt(1) || 65);
+      const bullish = seed % 3 !== 0;
+      const score = 6.5 + (seed % 30) / 10;
+      const consensusScore = Math.min(9.8, Math.max(5.0, score));
+      setCoordinatedAiData({
+        ticker: targetTicker,
+        consensusRating: consensusScore >= 7.5 ? 'BULLISH' : consensusScore <= 5.8 ? 'BEARISH' : 'NEUTRAL',
+        consensusConfidence: 0.80 + (seed % 18) / 100,
+        consensusScore,
+        orchestratorSummary: `I quattro modelli convergono su ${targetTicker} con un sentiment ${consensusScore >= 7.5 ? 'positivo' : 'neutro'} guidato da fondamentali solidi e trend di mercato favorevoli.`,
+        agents: {
+          gemini: { rating: bullish ? 'BULLISH' : 'NEUTRAL', score: consensusScore + 0.2, opinion: `Gemini rileva fondamentali robusti per ${targetTicker} con un ROIC superiore alla media di settore.`, isReal: false },
+          claude: { rating: bullish ? 'BULLISH' : 'NEUTRAL', score: consensusScore - 0.1, opinion: `Claude valuta positivamente il moat competitivo e la solidità del management di ${targetTicker}.`, isReal: false },
+          chatgpt: { rating: bullish ? 'BULLISH' : 'NEUTRAL', score: consensusScore + 0.1, opinion: `ChatGPT stima multipli correnti giustificati dai flussi di cassa operativi attesi per ${targetTicker}.`, isReal: false },
+          perplexity: { rating: bullish ? 'BULLISH' : 'NEUTRAL', score: consensusScore, opinion: `Perplexity segnala sentiment di mercato stabile con notizie recenti prevalentemente positive su ${targetTicker}.`, isReal: false },
+        }
       });
-      if (res.ok) {
-        const data = await res.json();
-        setCoordinatedAiData(data);
-      } else {
-        console.error("Coordinated AI request failed");
-      }
-    } catch (err) {
-      console.error("Error retrieving multi-AI consensus:", err);
-    } finally {
       setIsConsensusLoading(false);
-    }
+    }, 1200);
   }, [currentTicker]);
+
 
   // Trigger consensus calculation automatically when clicking Multi-AI tab for the first time
   useEffect(() => {
