@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, ShieldCheck, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import PortliLogo from './PortliLogo';
+import ConstellationBackground from './ConstellationBackground';
 
 // Design Tokens defined by the FinTech UI/UX guidelines
 const T = {
@@ -213,100 +214,8 @@ export default function AuthView({ onAuthSuccess }: AuthViewProps) {
         fontFamily: '"Inter", sans-serif'
       }}
     >
-      {/* Dynamic Keyframe Animations for Cinematic FinTech Glows */}
-      <style>{`
-        @keyframes qev-dash {
-          to {
-            stroke-dashoffset: -100;
-          }
-        }
-        @keyframes qev-pulse {
-          0%, 100% {
-            transform: scale(1);
-            opacity: 0.3;
-            filter: drop-shadow(0 0 2px var(--glow-color, #00c2ff));
-          }
-          50% {
-            transform: scale(1.15);
-            opacity: 0.8;
-            filter: drop-shadow(0 0 8px var(--glow-color, #00c2ff));
-          }
-        }
-        @keyframes qev-float {
-          0%, 100% {
-            transform: translateY(0px) rotate(0deg);
-          }
-          50% {
-            transform: translateY(-8px) rotate(1deg);
-          }
-        }
-        @keyframes qev-float-reverse {
-          0%, 100% {
-            transform: translateY(0px) rotate(0deg);
-          }
-          50% {
-            transform: translateY(6px) rotate(-1.5deg);
-          }
-        }
-        @keyframes qev-glowing-glow {
-          0%, 100% { opacity: 0.15; }
-          50% { opacity: 0.35; }
-        }
-        .qev-line-flow {
-          stroke-dasharray: 12, 12;
-          animation: qev-dash 15s linear infinite;
-        }
-        .qev-pulse-node {
-          transform-origin: center;
-          animation: qev-pulse 4s ease-in-out infinite;
-        }
-        .qev-float-cluster-1 {
-          animation: qev-float 8s ease-in-out infinite;
-        }
-        .qev-float-cluster-2 {
-          animation: qev-float-reverse 10s ease-in-out infinite;
-        }
-      `}</style>
-
-      {/* BACKGROUND: 4K Constellation Space Image */}
-      <div 
-        id="portli-ai-background"
-        className="absolute inset-0 pointer-events-none select-none overflow-hidden"
-        style={{ 
-          zIndex: 1, 
-          backgroundColor: '#05070e',
-          backgroundImage: "url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?ixlib=rb-4.0.3&auto=format&fit=crop&w=3840&q=80')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          animation: 'slowZoom 60s linear infinite alternate'
-        }}
-      >
-        <style>{`
-          @keyframes slowZoom {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
-          }
-        `}</style>
-
-        {/* Dark overlay gradient to ensure perfect readability of the login card */}
-        <div className="absolute inset-0" style={{ 
-          background: 'linear-gradient(to bottom, rgba(5,7,14,0.3) 0%, rgba(5,7,14,0.85) 100%)' 
-        }} />
-        
-        {/* Subtle Animated Radial Gradients (AI Orbs) for the Portli vibe */}
-        <motion.div
-          className="absolute rounded-full blur-[120px]"
-          style={{ top: '-10%', left: '-10%', width: '70vw', height: '70vw', maxWidth: '800px', maxHeight: '800px', backgroundColor: '#863bff', mixBlendMode: 'screen' }}
-          animate={{ scale: [1, 1.15, 0.95, 1], opacity: [0.15, 0.35, 0.15], x: [0, 50, -30, 0], y: [0, -50, 30, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute rounded-full blur-[150px]"
-          style={{ bottom: '-20%', right: '-10%', width: '60vw', height: '60vw', maxWidth: '700px', maxHeight: '700px', backgroundColor: '#00c2ff', mixBlendMode: 'screen' }}
-          animate={{ scale: [1, 1.2, 0.9, 1], opacity: [0.1, 0.25, 0.1], x: [0, -60, 40, 0], y: [0, 40, -40, 0] }}
-          transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
-        />
-      </div>
+      {/* BACKGROUND: Animated Constellation Canvas */}
+      <ConstellationBackground />
 
       {/* Main card panel wrapper */}
       <AnimatePresence mode="wait">

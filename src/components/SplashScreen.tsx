@@ -282,7 +282,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     // Cinematic Stage Triggers
     safeTimeout(() => {
       animationStage = 2; // stage = 2 starts collapsing the scattered particles
-    }, 2000);
+    }, 3000);
 
     safeTimeout(() => {
       globalTransitionAlpha = 0.01;
@@ -293,10 +293,10 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       setSloganVisible(true);
       setLoadingBarVisible(true);
 
-      // Bloomberg style progression loading bar (4% progress every 45ms)
+      // Bloomberg style progression loading bar (3% progress every 55ms)
       let progress = 0;
       const progressInterval = safeInterval(() => {
-        progress += 4;
+        progress += 3;
         setLoadingProgress(Math.min(100, progress));
 
         if (progress >= 100) {
@@ -307,11 +307,11 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
             setInternalTransitionTrigger(true);
             safeTimeout(() => {
               onCompleteRef.current();
-            }, 400); // Fluid out scale/blur transit
-          }, 300);
+            }, 500); // Fluid out scale/blur transit
+          }, 400);
         }
-      }, 45);
-    }, 4500);
+      }, 55);
+    }, 7000);
 
     // Dynamic responsive sizing safety bounds
     const handleResize = () => {
