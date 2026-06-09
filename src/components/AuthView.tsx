@@ -268,65 +268,44 @@ export default function AuthView({ onAuthSuccess }: AuthViewProps) {
         }
       `}</style>
 
-      {/* BACKGROUND: Premium AI Brain Neural Mesh */}
+      {/* BACKGROUND: 4K Constellation Space Image */}
       <div 
         id="portli-ai-background"
         className="absolute inset-0 pointer-events-none select-none overflow-hidden"
-        style={{ zIndex: 1, backgroundColor: '#05070e' }}
+        style={{ 
+          zIndex: 1, 
+          backgroundColor: '#05070e',
+          backgroundImage: "url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?ixlib=rb-4.0.3&auto=format&fit=crop&w=3840&q=80')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          animation: 'slowZoom 60s linear infinite alternate'
+        }}
       >
-        {/* Animated Radial Gradients (AI Orbs) */}
+        <style>{`
+          @keyframes slowZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+          }
+        `}</style>
+
+        {/* Dark overlay gradient to ensure perfect readability of the login card */}
+        <div className="absolute inset-0" style={{ 
+          background: 'linear-gradient(to bottom, rgba(5,7,14,0.3) 0%, rgba(5,7,14,0.85) 100%)' 
+        }} />
+        
+        {/* Subtle Animated Radial Gradients (AI Orbs) for the Portli vibe */}
         <motion.div
-          className="absolute rounded-full blur-[100px]"
-          style={{ top: '0%', left: '0%', width: '70vw', height: '70vw', maxWidth: '800px', maxHeight: '800px', backgroundColor: '#863bff', mixBlendMode: 'screen' }}
-          animate={{ scale: [1, 1.15, 0.95, 1], opacity: [0.25, 0.45, 0.25], x: [0, 50, -30, 0], y: [0, -50, 30, 0] }}
+          className="absolute rounded-full blur-[120px]"
+          style={{ top: '-10%', left: '-10%', width: '70vw', height: '70vw', maxWidth: '800px', maxHeight: '800px', backgroundColor: '#863bff', mixBlendMode: 'screen' }}
+          animate={{ scale: [1, 1.15, 0.95, 1], opacity: [0.15, 0.35, 0.15], x: [0, 50, -30, 0], y: [0, -50, 30, 0] }}
           transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute rounded-full blur-[120px]"
-          style={{ bottom: '-10%', right: '-10%', width: '60vw', height: '60vw', maxWidth: '700px', maxHeight: '700px', backgroundColor: '#00c2ff', mixBlendMode: 'screen' }}
-          animate={{ scale: [1, 1.2, 0.9, 1], opacity: [0.2, 0.4, 0.2], x: [0, -60, 40, 0], y: [0, 40, -40, 0] }}
+          className="absolute rounded-full blur-[150px]"
+          style={{ bottom: '-20%', right: '-10%', width: '60vw', height: '60vw', maxWidth: '700px', maxHeight: '700px', backgroundColor: '#00c2ff', mixBlendMode: 'screen' }}
+          animate={{ scale: [1, 1.2, 0.9, 1], opacity: [0.1, 0.25, 0.1], x: [0, -60, 40, 0], y: [0, 40, -40, 0] }}
           transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
         />
-
-        {/* Neural Network Abstract Grid Mask */}
-        <div 
-          className="absolute inset-0 opacity-30" 
-          style={{
-            backgroundImage: `radial-gradient(circle at center, transparent 0%, #05070e 80%), linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`,
-            backgroundSize: '100% 100%, 40px 40px, 40px 40px',
-            backgroundPosition: 'center center'
-          }} 
-        />
-        
-        {/* Floating "data points" simulating market transactions */}
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={`data-point-${i}`}
-            className="absolute rounded-full"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 4 + 2}px`,
-              height: `${Math.random() * 4 + 2}px`,
-              backgroundColor: i % 2 === 0 ? '#00c2ff' : '#863bff',
-              boxShadow: `0 0 10px ${i % 2 === 0 ? '#00c2ff' : '#863bff'}`,
-            }}
-            animate={{
-              y: [0, -100, 0],
-              opacity: [0, 0.8, 0],
-              scale: [0, 1.5, 0]
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Infinity,
-              ease: "linear",
-              delay: Math.random() * 5
-            }}
-          />
-        ))}
-
-        {/* Overlay Dark vignette to focus center */}
-        <div className="absolute inset-0" style={{ boxShadow: 'inset 0 0 200px rgba(0,0,0,0.95)' }} />
       </div>
 
       {/* Main card panel wrapper */}
