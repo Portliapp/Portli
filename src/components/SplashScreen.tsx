@@ -483,7 +483,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       <div 
         ref={sloganContainerRef}
         id="sloganContainer"
-        className="absolute top-[calc(50%+75px)] left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-20"
+        className="absolute top-[calc(50%+75px)] left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-20 transition-transform duration-200 ease-out"
       >
         <div 
           className="brand-slogan w-full text-center pl-[4.5px] text-[#52596d] text-[10px] md:text-xs font-semibold tracking-[4.5px] whitespace-nowrap mb-2 transition-all duration-1000 ease-out"
