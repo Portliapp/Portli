@@ -142,15 +142,23 @@ export default function AuthView({ onAuthSuccess }: AuthViewProps) {
       } else {
         // REAL SUPABASE SIGNUP
         const res = await supabaseService.signUp(email, password, finalUserName);
-        setSuccessToast('Registrazione completata!');
-        setTimeout(() => {
-          onAuthSuccess({
-            name: finalUserName,
-            tier: 'Piano Standard',
-            token: res.session?.access_token || 'active_session'
-          });
+        
+        // Se res.session è null, significa che Supabase ha inviato un'email di conferma
+        if (!res.session) {
+          setSuccessToast('Controlla la tua email per confermare la registrazione!');
           setIsLoading(false);
-        }, 800);
+          // Fermiamo qui il flusso. L'utente confermerà via mail.
+        } else {
+          setSuccessToast('Registrazione completata!');
+          setTimeout(() => {
+            onAuthSuccess({
+              name: finalUserName,
+              tier: 'Piano Standard',
+              token: res.session.access_token
+            });
+            setIsLoading(false);
+          }, 800);
+        }
       }
     } catch (err: any) {
       console.error("Auth error:", err);
