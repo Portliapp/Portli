@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, ShieldCheck, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import PortliLogo from './PortliLogo';
+import { supabaseService } from '../services/supabaseService';
 
 // Design Tokens defined by the FinTech UI/UX guidelines
 const T = {
@@ -112,7 +113,7 @@ export default function AuthView({ onAuthSuccess }: AuthViewProps) {
     return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoading) return;
 
@@ -121,73 +122,65 @@ export default function AuthView({ onAuthSuccess }: AuthViewProps) {
     setIsLoading(true);
     setErrorMessage(null);
 
-    // Simulate server authentication latency
-    setTimeout(() => {
-      try {
-        const dummyToken = `qevora_jwt_${Math.random().toString(36).substring(2, 12)}`;
-        const finalUserName = isLogin 
-          ? (email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1)) 
-          : username.trim();
-        
-        // Log client payload credentials summary for local dev testing
-        console.log('📌 [Portli Auth System] Submit complete:', {
-          mode: isLogin ? 'LOGIN' : 'REGISTRATION',
-          email,
-          username: finalUserName,
-          simulatedToken: dummyToken,
-          timestamp: new Date().toISOString()
-        });
+    try {
+      const finalUserName = isLogin 
+        ? (email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1)) 
+        : username.trim();
 
-        // Store secure session mocks in localStorage for dashboard persistence
-        localStorage.setItem('qevora_auth_token', dummyToken);
-        localStorage.setItem('qevora_username', finalUserName);
-        localStorage.setItem('qevora_tier', 'Piano Custom Premium'); // Granting premium demo tier access
-        
-        setSuccessToast(isLogin ? 'Accesso autorizzato!' : 'Registrazione completata!');
-        
+      if (isLogin) {
+        // REAL SUPABASE LOGIN
+        const res = await supabaseService.signIn(email, password);
+        setSuccessToast('Accesso autorizzato!');
         setTimeout(() => {
           onAuthSuccess({
             name: finalUserName,
-            tier: 'Piano Custom Premium',
-            token: dummyToken
+            tier: 'Piano Standard',
+            token: res.session?.access_token || 'active_session'
           });
           setIsLoading(false);
         }, 800);
-
-      } catch (err) {
-        setErrorMessage('Errore nel caricamento delle credenziali di sessione.');
-        setIsLoading(false);
+      } else {
+        // REAL SUPABASE SIGNUP
+        const res = await supabaseService.signUp(email, password, finalUserName);
+        setSuccessToast('Registrazione completata!');
+        setTimeout(() => {
+          onAuthSuccess({
+            name: finalUserName,
+            tier: 'Piano Standard',
+            token: res.session?.access_token || 'active_session'
+          });
+          setIsLoading(false);
+        }, 800);
       }
-    }, 1200);
+    } catch (err: any) {
+      console.error("Auth error:", err);
+      // Traslate common supabase errors
+      let msg = "Errore di autenticazione.";
+      if (err.message?.includes("Invalid login credentials")) {
+        msg = "Credenziali non valide.";
+      } else if (err.message?.includes("already registered")) {
+        msg = "Email già registrata.";
+      }
+      setErrorMessage(msg);
+      setIsLoading(false);
+    }
   };
 
-  // Simulate Google OAuth
-  const handleGoogleLogin = () => {
+  // Real Google OAuth via Supabase
+  const handleGoogleLogin = async () => {
     if (isLoading) return;
     setIsLoading(true);
     setErrorMessage(null);
 
-    setTimeout(() => {
-      const dummyToken = 'qevora_jwt_google_oauth_active';
-      const googleUser = 'Davide';
-      
-      console.log('📌 [Portli Auth System] Google Multi-Agent OAuth auth success');
-      
-      localStorage.setItem('qevora_auth_token', dummyToken);
-      localStorage.setItem('qevora_username', googleUser);
-      localStorage.setItem('qevora_tier', 'Piano Custom Premium');
-      
-      setSuccessToast('Autenticato con successo tramite Google Cloud Secure Sign-In');
-      
-      setTimeout(() => {
-        onAuthSuccess({
-          name: googleUser,
-          tier: 'Piano Custom Premium',
-          token: dummyToken
-        });
-        setIsLoading(false);
-      }, 800);
-    }, 1000);
+    try {
+      await supabaseService.signInWithGoogle();
+      // Notice: signInWithOAuth redirects the page, so code below won't execute in most flows
+      setSuccessToast('Reindirizzamento a Google...');
+    } catch (err: any) {
+      console.error("Google Auth error:", err);
+      setErrorMessage("Errore con l'autenticazione Google.");
+      setIsLoading(false);
+    }
   };
 
   // Switch between views
