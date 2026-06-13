@@ -143,7 +143,7 @@ export default function App() {
         console.error("Error initializing session:", err);
       } finally {
         setIsLoadingData(false);
-        setTimeout(() => setShowSplash(false), 500); // Hide splash after load
+        // La chiusura dello splash screen ora è gestita interamente dall'onComplete del componente SplashScreen
       }
     }
     initSession();
