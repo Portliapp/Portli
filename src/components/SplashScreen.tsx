@@ -19,6 +19,10 @@ interface Particle {
   speedFactor: number;
   lastX: number;
   lastY: number;
+  type: 'star' | 'diamond' | 'cross' | 'dot' | 'text';
+  color: string;
+  twinklePhase: number;
+  char?: string;
 }
 
 export default function SplashScreen({ onComplete }: SplashScreenProps) {
@@ -161,9 +165,15 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         console.warn("Canvas buffer analysis bypassed safely: ", err);
       }
 
+      const colors = ['rgba(0, 242, 254, 1)', 'rgba(255, 255, 255, 1)', 'rgba(57, 255, 182, 1)', 'rgba(245, 194, 73, 1)'];
+      const types: ('star' | 'diamond' | 'cross' | 'dot' | 'text')[] = ['star', 'star', 'star', 'dot', 'diamond', 'cross', 'text'];
+      const chars = ['0', '1', '$', '€', '₿'];
+
       textTargetPoints.forEach((target) => {
         const angle = Math.random() * Math.PI * 2;
         const scatterSpeed = Math.random() * 4 + 1;
+        const pType = types[Math.floor(Math.random() * types.length)];
+        const pColor = colors[Math.floor(Math.random() * colors.length)];
 
         particles.push({
           x: target.x,
@@ -172,12 +182,16 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           vy: Math.sin(angle) * scatterSpeed,
           targetX: target.x,
           targetY: target.y,
-          size: Math.random() * 1.3 + 0.5,
+          size: pType === 'star' ? Math.random() * 0.8 + 0.3 : Math.random() * 1.5 + 0.8,
           alpha: 0,
-          maxAlpha: Math.random() * 0.4 + 0.3,
+          maxAlpha: Math.random() * 0.5 + 0.3,
           speedFactor: Math.random() * 0.05 + 0.02,
           lastX: target.x,
-          lastY: target.y
+          lastY: target.y,
+          type: pType,
+          color: pColor,
+          twinklePhase: Math.random() * Math.PI * 2,
+          char: pType === 'text' ? chars[Math.floor(Math.random() * chars.length)] : undefined,
         });
       });
     };
@@ -240,18 +254,62 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           const speedY = p.y - p.lastY;
           const currentSpeed = Math.sqrt(speedX * speedX + speedY * speedY);
 
+          // Apply Twinkle effect
+          const twinkleAlpha = p.type === 'star' ? currentAlpha * (0.6 + 0.4 * Math.sin(Date.now() * 0.003 + p.twinklePhase)) : currentAlpha;
+
+          // Drawing Constellation/Neural Connections (only in stage 1 or early stage 2)
+          if (animationStage === 1 || (animationStage === 2 && currentSpeed > 0.5)) {
+            // Check proximity to a few subsequent particles to draw lines
+            for (let j = index + 1; j < Math.min(index + 4, particles.length); j++) {
+              const other = particles[j];
+              const distSq = (p.x - other.x) ** 2 + (p.y - other.y) ** 2;
+              if (distSq < 2500) { // roughly 50px distance
+                const lineAlpha = (1 - distSq / 2500) * twinkleAlpha * 0.3;
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(other.x, other.y);
+                ctx.strokeStyle = p.color.replace('1)', `${lineAlpha})`);
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+              }
+            }
+          }
+
           if (animationStage === 2 && currentSpeed > 1.5) {
             ctx.beginPath();
             ctx.moveTo(p.lastX, p.lastY);
             ctx.lineTo(p.x, p.y);
             ctx.lineWidth = p.size;
-            ctx.strokeStyle = index % 3 === 0 ? `rgba(0, 242, 254, ${currentAlpha})` : `rgba(255, 255, 255, ${currentAlpha})`;
+            ctx.strokeStyle = p.color.replace('1)', `${twinkleAlpha})`);
             ctx.stroke();
           } else {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = index % 3 === 0 ? `rgba(0, 242, 254, ${currentAlpha})` : `rgba(255, 255, 255, ${currentAlpha})`;
-            ctx.fill();
+            ctx.fillStyle = p.color.replace('1)', `${twinkleAlpha})`);
+            ctx.strokeStyle = p.color.replace('1)', `${twinkleAlpha})`);
+            ctx.lineWidth = 1;
+
+            if (p.type === 'star' || p.type === 'dot') {
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+              ctx.fill();
+            } else if (p.type === 'diamond') {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y - p.size);
+              ctx.lineTo(p.x + p.size, p.y);
+              ctx.lineTo(p.x, p.y + p.size);
+              ctx.lineTo(p.x - p.size, p.y);
+              ctx.closePath();
+              ctx.fill();
+            } else if (p.type === 'cross') {
+              ctx.beginPath();
+              ctx.moveTo(p.x - p.size, p.y);
+              ctx.lineTo(p.x + p.size, p.y);
+              ctx.moveTo(p.x, p.y - p.size);
+              ctx.lineTo(p.x, p.y + p.size);
+              ctx.stroke();
+            } else if (p.type === 'text' && p.char) {
+              ctx.font = `bold ${p.size * 5}px monospace`;
+              ctx.fillText(p.char, p.x, p.y);
+            }
           }
         });
       }
