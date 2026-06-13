@@ -51,12 +51,12 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   // Terminal Typing Log Emulator Sequence
   useEffect(() => {
     const bootLogs = [
-      "> QUANTUM AI CORE: ONLINE. ANALYZING 2.4M MARKET PARAMETERS...",
-      "> BTC/USD 64,231.00 [▲ +2.4%]  |  ETH/USD 3,420.00 [▼ -0.8%]",
-      "> DECRYPTING GLOBAL ASSET TRENDS. NEURAL EFFICIENCY: 99.98%",
-      "> S&P500 5,234.18 [▲ +1.1%]  |  GOLD/OZ 2,340.50 [▲ +0.5%]",
+      "> QUANTUM AI CORE: INITIALIZING...",
+      "> ANALYZING 2.4M MARKET PARAMETERS...",
+      "> NEURAL NETWORK EFFICIENCY: 99.98%",
+      "> DECRYPTING GLOBAL ASSET TRENDS...",
       "> PREDICTIVE RISK MODELS: ALIGNED & SECURE.",
-      "> PORTFOLIO INTELLIGENCE UPLINK COMPLETE. ACCESS GRANTED."
+      "> QUANTUM ANALYSIS COMPLETE. ACCESS GRANTED."
     ];
 
     let logIndex = 0;
