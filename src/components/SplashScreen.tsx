@@ -51,12 +51,12 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   // Terminal Typing Log Emulator Sequence
   useEffect(() => {
     const bootLogs = [
-      "INITIALIZING PORTLI SYSTEM ENGINE...",
-      "DECRYPTING MULTI-ASSET DATA STREAM...",
-      "CONNECTING TO AI QUANTUM CORE PROTOCOLS...",
-      "OPTIMIZING DATA PARTICLES RESIDUE...",
-      "SOLIDIFYING CORE BRAND MATRIX...",
-      "SYNCHRONIZATION 100% COMPLETE. ACCESS GRANTED."
+      "> QUANTUM AI CORE: ONLINE. ANALYZING 2.4M MARKET PARAMETERS...",
+      "> BTC/USD 64,231.00 [▲ +2.4%]  |  ETH/USD 3,420.00 [▼ -0.8%]",
+      "> DECRYPTING GLOBAL ASSET TRENDS. NEURAL EFFICIENCY: 99.98%",
+      "> S&P500 5,234.18 [▲ +1.1%]  |  GOLD/OZ 2,340.50 [▲ +0.5%]",
+      "> PREDICTIVE RISK MODELS: ALIGNED & SECURE.",
+      "> PORTFOLIO INTELLIGENCE UPLINK COMPLETE. ACCESS GRANTED."
     ];
 
     let logIndex = 0;
