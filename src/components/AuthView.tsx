@@ -1082,34 +1082,30 @@ export default function AuthView({ onAuthSuccess }: AuthViewProps) {
                 <div className="flex space-x-1.5">
                   <div 
                     className="h-1 flex-1 rounded-full transition-all duration-300"
-                    style={{ 
-                      backgroundColor: pwdScore >= 1 ? (pwdScore === 1 ? T.red : (pwdScore === 2 ? T.accent : T.green)) : '#1a2332'
-                    }}
+                    style={{ backgroundColor: pwdScore >= 1 ? (pwdScore === 1 ? T.red : (pwdScore <= 3 ? T.accent : T.green)) : '#1a2332' }}
                   />
                   <div 
                     className="h-1 flex-1 rounded-full transition-all duration-300"
-                    style={{ 
-                      backgroundColor: pwdScore >= 2 ? (pwdScore === 2 ? T.accent : T.green) : '#1a2332'
-                    }}
+                    style={{ backgroundColor: pwdScore >= 2 ? (pwdScore === 2 ? T.red : (pwdScore === 3 ? T.accent : T.green)) : '#1a2332' }}
                   />
                   <div 
                     className="h-1 flex-1 rounded-full transition-all duration-300"
-                    style={{ 
-                      backgroundColor: pwdScore >= 3 ? T.green : '#1a2332'
-                    }}
+                    style={{ backgroundColor: pwdScore >= 3 ? (pwdScore === 3 ? T.accent : T.green) : '#1a2332' }}
+                  />
+                  <div 
+                    className="h-1 flex-1 rounded-full transition-all duration-300"
+                    style={{ backgroundColor: pwdScore >= 4 ? T.green : '#1a2332' }}
                   />
                 </div>
 
                 {/* Strength Meter Label */}
-                <div className="flex items-center justify-between text-3xs font-semibold uppercase tracking-wider">
+                <div className="flex items-center justify-between text-3xs font-semibold uppercase tracking-wider mt-1">
                   <span style={{ color: T.muted2 }}>Sicurezza Ledger:</span>
                   <span 
                     className="font-bold"
-                    style={{ 
-                      color: pwdScore === 3 ? T.green : (pwdScore === 2 ? T.accent : T.red) 
-                    }}
+                    style={{ color: pwdScore === 4 ? T.green : (pwdScore >= 2 ? T.accent : T.red) }}
                   >
-                    {pwdScore === 3 ? 'MASSIMA (Forte)' : (pwdScore === 2 ? 'MEDIA (Accettabile)' : 'MINIMA (Debole)')}
+                    {pwdScore === 4 ? 'MASSIMA (Forte)' : (pwdScore >= 2 ? 'MEDIA (Accettabile)' : 'MINIMA (Debole)')}
                   </span>
                 </div>
 
@@ -1117,15 +1113,19 @@ export default function AuthView({ onAuthSuccess }: AuthViewProps) {
                 <div className="grid grid-cols-1 gap-1 pt-0.5 text-3xs">
                   <div className="flex items-center space-x-1" style={{ color: hasMinLength ? T.green : T.muted }}>
                     <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: hasMinLength ? T.green : T.muted }} />
-                    <span>Minimo 6 caratteri ({password.length}/6)</span>
+                    <span>Minimo 8 caratteri ({password.length}/8)</span>
                   </div>
-                  <div className="flex items-center space-x-1" style={{ color: hasUppercase ? T.green : T.muted }}>
-                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: hasUppercase ? T.green : T.muted }} />
-                    <span>Almeno una lettera maiuscola (A-Z)</span>
+                  <div className="flex items-center space-x-1" style={{ color: (hasUppercase && hasLowercase) ? T.green : T.muted }}>
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: (hasUppercase && hasLowercase) ? T.green : T.muted }} />
+                    <span>Lettere maiuscole (A-Z) e minuscole (a-z)</span>
                   </div>
-                  <div className="flex items-center space-x-1" style={{ color: hasNumberOrSpec ? T.green : T.muted }}>
-                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: hasNumberOrSpec ? T.green : T.muted }} />
-                    <span>Almeno un numero o carattere speciale (@, 1, $, ...)</span>
+                  <div className="flex items-center space-x-1" style={{ color: hasNumber ? T.green : T.muted }}>
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: hasNumber ? T.green : T.muted }} />
+                    <span>Almeno un numero (0-9)</span>
+                  </div>
+                  <div className="flex items-center space-x-1" style={{ color: hasSymbol ? T.green : T.muted }}>
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: hasSymbol ? T.green : T.muted }} />
+                    <span>Almeno un carattere speciale ($, @, !)</span>
                   </div>
                 </div>
               </div>
