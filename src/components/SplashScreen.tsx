@@ -330,7 +330,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
         ctx.shadowBlur = 15 * globalTransitionAlpha;
         ctx.shadowColor = '#00f2fe';
-        ctx.fillText("Portli", width / 2, height / 2);
+        ctx.fillText("Portli", (width / 2) - 15, height / 2);
         ctx.shadowBlur = 0;
       }
 
