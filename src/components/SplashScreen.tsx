@@ -147,7 +147,8 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("Portli", width / 2, height / 2);
+        // Optical offset: shift "Portli" left by 15px to compensate for the visual weight of 'P' vs 'i'
+        ctx.fillText("Portli", (width / 2) - 15, height / 2);
 
         const imgData = ctx.getImageData(0, 0, width, height);
         ctx.clearRect(0, 0, width, height);
@@ -412,8 +413,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         canvas.style.transform = `translate3d(${distX}px, ${distY}px, 0)`;
       }
       if (slogan) {
-        // Aggiungiamo un +25px di optical offset per compensare il peso visivo del logo "Portli"
-        slogan.style.transform = `translate(calc(-50% + 25px + ${distX}px), ${distY}px)`;
+        slogan.style.transform = `translate(calc(-50% + ${distX}px), ${distY}px)`;
       }
     };
 
@@ -421,10 +421,9 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       mouseRef.current.x = -1000;
       mouseRef.current.y = -1000;
       
-      // Quando il mouse esce, ripristiniamo l'offset ottico senza distorsioni
       const slogan = sloganContainerRef.current;
       if (slogan) {
-        slogan.style.transform = `translate(calc(-50% + 25px), 0px)`;
+        slogan.style.transform = `translate(-50%, 0px)`;
       }
       const canvas = canvasRef.current;
       if (canvas) {
@@ -484,8 +483,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       <div 
         ref={sloganContainerRef}
         id="sloganContainer"
-        className="absolute top-[calc(50%+75px)] left-1/2 flex flex-col items-center pointer-events-none z-20"
-        style={{ transform: 'translate(calc(-50% + 25px), 0px)' }}
+        className="absolute top-[calc(50%+75px)] left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-20"
       >
         <div 
           className="brand-slogan w-full text-center pl-[4.5px] text-[#52596d] text-[10px] md:text-xs font-semibold tracking-[4.5px] whitespace-nowrap mb-2 transition-all duration-1000 ease-out"
@@ -509,7 +507,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       {/* Bloomberg-style progress loading tracker */}
       <div 
         id="loadingContainer"
-        className="absolute bottom-[18%] w-[280px] h-[2px] bg-white/[0.02] transition-opacity duration-500 z-30 overflow-hidden"
+        className="absolute bottom-[18%] left-1/2 -translate-x-1/2 w-[280px] h-[2px] bg-white/[0.02] transition-opacity duration-500 z-30 overflow-hidden"
         style={{ opacity: loadingBarVisible ? 1 : 0 }}
       >
         <div 
