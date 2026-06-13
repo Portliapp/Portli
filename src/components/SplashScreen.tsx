@@ -144,7 +144,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       try {
         const fontSize = Math.min(width * 0.12, 130);
         ctx.fillStyle = "#ffffff";
-        ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+        ctx.font = `bold ${fontSize}px 'Inter', -apple-system, BlinkMacSystemFont, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText("Portli", width / 2, height / 2);
