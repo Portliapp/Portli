@@ -44,12 +44,14 @@ export default function AuthView({ onAuthSuccess }: AuthViewProps) {
   const isEmailValid = emailRegex.test(email);
 
   const isPwdEmpty = password.length === 0;
-  const hasMinLength = password.length >= 6;
+  const hasMinLength = password.length >= 8;
   const hasUppercase = /[A-Z]/.test(password);
-  const hasNumberOrSpec = /[0-9]/.test(password) || /[^A-Za-z0-9]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSymbol = /[^A-Za-z0-9]/.test(password);
   
-  // Strength score metric (0 to 3)
-  const pwdScore = (hasMinLength ? 1 : 0) + (hasUppercase ? 1 : 0) + (hasNumberOrSpec ? 1 : 0);
+  // Strength score metric (0 to 4)
+  const pwdScore = (hasMinLength ? 1 : 0) + (hasUppercase && hasLowercase ? 1 : 0) + (hasNumber ? 1 : 0) + (hasSymbol ? 1 : 0);
   
   // Custom interactive borders & glows reflecting validated nodes in Portli
   let emailBorder = T.border;
@@ -73,11 +75,11 @@ export default function AuthView({ onAuthSuccess }: AuthViewProps) {
       pwdBorder = T.accent;
       pwdGlow = `0 0 8px ${T.accent}30`;
     } else {
-      pwdBorder = pwdScore === 3 ? T.green : pwdScore === 2 ? T.accent : T.red;
-      pwdGlow = pwdScore === 3 ? `0 0 8px ${T.green}25` : pwdScore === 2 ? `0 0 8px ${T.accent}25` : `0 0 8px ${T.red}25`;
+      pwdBorder = pwdScore === 4 ? T.green : pwdScore >= 2 ? T.accent : T.red;
+      pwdGlow = pwdScore === 4 ? `0 0 8px ${T.green}25` : pwdScore >= 2 ? `0 0 8px ${T.accent}25` : `0 0 8px ${T.red}25`;
     }
   } else if (!isPwdEmpty) {
-    pwdBorder = pwdScore === 3 ? `${T.green}b0` : pwdScore === 2 ? `${T.accent}80` : `${T.red}b0`;
+    pwdBorder = pwdScore === 4 ? `${T.green}b0` : pwdScore >= 2 ? `${T.accent}80` : `${T.red}b0`;
   }
 
   // Validation
@@ -95,11 +97,15 @@ export default function AuthView({ onAuthSuccess }: AuthViewProps) {
       setErrorMessage('La password è obbligatoria.');
       return false;
     }
-    if (password.length < 6) {
-      setErrorMessage('La password deve contenere almeno 6 caratteri.');
+    if (password.length < 8) {
+      setErrorMessage('La password deve contenere almeno 8 caratteri.');
       return false;
     }
     if (!isLogin) {
+      if (!hasUppercase || !hasLowercase || !hasNumber || !hasSymbol) {
+        setErrorMessage('La password deve includere lettere (maiuscole/minuscole), numeri e simboli.');
+        return false;
+      }
       if (!username.trim()) {
         setErrorMessage('Il nome utente è richiesto per la registrazione.');
         return false;
