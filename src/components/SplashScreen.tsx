@@ -412,13 +412,24 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         canvas.style.transform = `translate3d(${distX}px, ${distY}px, 0)`;
       }
       if (slogan) {
-        slogan.style.transform = `translate(calc(-50% + ${distX}px), ${distY}px)`;
+        // Aggiungiamo un +25px di optical offset per compensare il peso visivo del logo "Portli"
+        slogan.style.transform = `translate(calc(-50% + 25px + ${distX}px), ${distY}px)`;
       }
     };
 
     const handleMouseLeave = () => {
       mouseRef.current.x = -1000;
       mouseRef.current.y = -1000;
+      
+      // Quando il mouse esce, ripristiniamo l'offset ottico senza distorsioni
+      const slogan = sloganContainerRef.current;
+      if (slogan) {
+        slogan.style.transform = `translate(calc(-50% + 25px), 0px)`;
+      }
+      const canvas = canvasRef.current;
+      if (canvas) {
+        canvas.style.transform = `translate3d(0px, 0px, 0)`;
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -473,7 +484,8 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       <div 
         ref={sloganContainerRef}
         id="sloganContainer"
-        className="absolute top-[calc(50%+75px)] left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-20"
+        className="absolute top-[calc(50%+75px)] left-1/2 flex flex-col items-center pointer-events-none z-20"
+        style={{ transform: 'translate(calc(-50% + 25px), 0px)' }}
       >
         <div 
           className="brand-slogan w-full text-center pl-[4.5px] text-[#52596d] text-[10px] md:text-xs font-semibold tracking-[4.5px] whitespace-nowrap mb-2 transition-all duration-1000 ease-out"
