@@ -28,7 +28,7 @@ interface Particle {
 export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const sloganContainerRef = useRef<HTMLDivElement>(null);
+  const parallaxContainerRef = useRef<HTMLDivElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
 
   // Core Functional States
@@ -147,8 +147,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        // Optical offset: shift "Portli" left by 15px to compensate for the visual weight of 'P' vs 'i'
-        ctx.fillText("Portli", (width / 2) - 15, height / 2);
+        ctx.fillText("Portli", width / 2, height / 2);
 
         const imgData = ctx.getImageData(0, 0, width, height);
         ctx.clearRect(0, 0, width, height);
@@ -330,7 +329,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
         ctx.shadowBlur = 15 * globalTransitionAlpha;
         ctx.shadowColor = '#00f2fe';
-        ctx.fillText("Portli", (width / 2) - 15, height / 2);
+        ctx.fillText("Portli", width / 2, height / 2);
         ctx.shadowBlur = 0;
       }
 
@@ -406,14 +405,9 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       const distX = (e.clientX - cx) * 0.02;
       const distY = (e.clientY - cy) * 0.02;
 
-      const canvas = canvasRef.current;
-      const slogan = sloganContainerRef.current;
-
-      if (canvas) {
-        canvas.style.transform = `translate3d(${distX}px, ${distY}px, 0)`;
-      }
-      if (slogan) {
-        slogan.style.transform = `translate(calc(-50% + ${distX}px), ${distY}px)`;
+      const parallax = parallaxContainerRef.current;
+      if (parallax) {
+        parallax.style.transform = `translate3d(${distX}px, ${distY}px, 0)`;
       }
     };
 
@@ -421,13 +415,9 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       mouseRef.current.x = -1000;
       mouseRef.current.y = -1000;
       
-      const slogan = sloganContainerRef.current;
-      if (slogan) {
-        slogan.style.transform = `translate(-50%, 0px)`;
-      }
-      const canvas = canvasRef.current;
-      if (canvas) {
-        canvas.style.transform = `translate3d(0px, 0px, 0)`;
+      const parallax = parallaxContainerRef.current;
+      if (parallax) {
+        parallax.style.transform = `translate3d(0px, 0px, 0)`;
       }
     };
 
@@ -472,36 +462,43 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       {/* OLED Absolute Ambient Scanline radar */}
       <div className="absolute top-[-100%] left-0 w-full h-3 bg-cyan-400/5 scanline-style pointer-events-none z-0" />
 
-      {/* Physics Canvas */}
-      <canvas 
-        ref={canvasRef} 
-        id="quantumCanvas"
-        className="absolute inset-0 w-full h-full z-10 pointer-events-none transition-transform duration-200 ease-out" 
-      />
-
-      {/* Slogan Container */}
+      {/* Unified Parallax Wrapper */}
       <div 
-        ref={sloganContainerRef}
-        id="sloganContainer"
-        className="absolute top-[calc(50%+75px)] left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-20 transition-transform duration-200 ease-out"
+        ref={parallaxContainerRef}
+        className="absolute inset-0 w-full h-full pointer-events-none transition-transform duration-200 ease-out z-10"
       >
-        <div 
-          className="brand-slogan w-full text-center pl-[4.5px] text-[#52596d] text-[10px] md:text-xs font-semibold tracking-[4.5px] whitespace-nowrap mb-2 transition-all duration-1000 ease-out"
-          style={{
-            opacity: sloganVisible ? 1 : 0,
-            transform: sloganVisible ? 'translateY(0px)' : 'translateY(10px)',
-            textShadow: sloganVisible ? '0 0 10px rgba(0, 242, 254, 0.2)' : 'none'
-          }}
-        >
-          ENGINEERING THE EVOLUTION OF DIGITAL CAPITAL.
-        </div>
-        <div 
-          className="neon-line h-[1px] bg-gradient-to-r from-transparent via-[#00f2fe] to-transparent transition-all duration-2000 ease-out"
-          style={{
-            width: sloganVisible ? '320px' : '0px',
-            boxShadow: '0 0 8px #00f2fe'
-          }}
+        {/* Physics Canvas */}
+        <canvas 
+          ref={canvasRef} 
+          id="quantumCanvas"
+          className="absolute inset-0 w-full h-full" 
         />
+
+        {/* Slogan Container */}
+        <div 
+          id="sloganContainer"
+          className="absolute top-[calc(50%+75px)] left-1/2 flex flex-col items-center"
+          style={{ transform: 'translate(calc(-50% + 35px), 0px)' }}
+        >
+          <div 
+            className="brand-slogan w-full text-center pl-[4.5px] text-[#52596d] text-[10px] md:text-xs font-semibold tracking-[4.5px] whitespace-nowrap mb-2 transition-all duration-1000 ease-out"
+            style={{
+              opacity: sloganVisible ? 1 : 0,
+              transform: sloganVisible ? 'translateY(0px)' : 'translateY(10px)',
+              textShadow: sloganVisible ? '0 0 10px rgba(0, 242, 254, 0.2)' : 'none'
+            }}
+          >
+            ENGINEERING THE EVOLUTION OF DIGITAL CAPITAL.
+          </div>
+          {/* Slogan underline scanner */}
+          <div 
+            className="neon-line h-[1px] bg-gradient-to-r from-transparent via-[#00f2fe] to-transparent transition-all duration-2000 ease-out"
+            style={{
+              width: sloganVisible ? '320px' : '0px',
+              boxShadow: '0 0 8px #00f2fe'
+            }}
+          />
+        </div>
       </div>
 
       {/* Bloomberg-style progress loading tracker */}
