@@ -8,6 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: { port: 3000 },
   base: '/',
   build: {
     outDir: 'dist',
