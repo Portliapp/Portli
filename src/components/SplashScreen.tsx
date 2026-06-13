@@ -230,7 +230,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           }
 
           let currentAlpha = p.alpha;
-          // Slow fusion: gradually reduce individual particle opacity while solid text grows
+          // FUSIONE LENTA: Riduce gradualmente l'opacità delle singole particelle mentre il testo pieno cresce
           if (globalTransitionAlpha > 0) {
             currentAlpha = p.alpha * (1 - globalTransitionAlpha);
           }
@@ -258,7 +258,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
       // Smoothly overlay the white vector display word logo
       if (animationStage === 3 || globalTransitionAlpha > 0) {
-        // Slow increment for ultra-smooth fusion
+        // MODIFICATO: Incremento ridotto da 0.04 a 0.012 per una transizione fluida e rallentata come da HTML originale
         if (animationStage === 3 && globalTransitionAlpha < 1) {
           globalTransitionAlpha += 0.012;
         }
@@ -283,7 +283,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     // Cinematic Stage Triggers
     safeTimeout(() => {
       animationStage = 2; // collapse particles back into text
-    }, 3000);
+    }, 2000);
 
     safeTimeout(() => {
       globalTransitionAlpha = 0.01;
@@ -294,10 +294,10 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       setSloganVisible(true);
       setLoadingBarVisible(true);
 
-      // Bloomberg style progression loading bar (1.5% progress every 55ms)
+      // Bloomberg style progression loading bar (2.5% progress every 45ms) come da HTML originale
       let progress = 0;
       const progressInterval = safeInterval(() => {
-        progress += 1.5;
+        progress += 2.5;
         setLoadingProgress(Math.min(100, progress));
 
         if (progress >= 100) {
@@ -308,18 +308,22 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
             setInternalTransitionTrigger(true);
             safeTimeout(() => {
               onCompleteRef.current();
-            }, 500);
-          }, 500);
+            }, 200);
+          }, 500); // Più tempo per godersi lo stato finale fuso come da HTML originale
         }
-      }, 55);
-    }, 7000);
+      }, 45);
+    }, 4500);
 
     // Dynamic responsive sizing safety bounds
+    let resizeTimeout: any;
     const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-      generateTextTargetsAndParticles();
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (!canvas) return;
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        generateTextTargetsAndParticles();
+      }, 250);
     };
     window.addEventListener('resize', handleResize);
 
